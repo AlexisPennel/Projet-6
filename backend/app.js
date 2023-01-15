@@ -1,5 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const authRoutes = require('./routes/auth');
+const saucesRoutes = require('./routes/sauces');
+
 mongoose.set('strictQuery', true);
 
 const app = express();
@@ -20,47 +23,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.post('/api/auth/signup', (req, res, next) => {
-    console.log(req.body);
-    res.status(201).json({
-        message: `Utilisateur ${req.body.email} ajouté !`
-    });
-});
+app.use('/api/auth', authRoutes);
 
-app.post('/api/auth/login', (req, res, next) => {
-    res.status(201).json({
-        message: 'Utilisateur connecté'
-    });
-});
-
-app.get('/api/sauces', (req, res, next) => {
-    res.status(200).json({
-        message: 'Tableau de sauces'
-    });
-});
-
-app.get('/api/sauces/:id', (req, res, next) => {
-    res.status(200).json({
-        message: `Sauce avec l'id fourni`
-    });
-});
-
-app.post('/api/sauces', (req, res, next) => {
-    res.status(201).json({
-        message: `Création d'une sauce`
-    });
-});
-
-app.put('/api/sauces/:id', (req, res, next) => {
-    res.status(201).json({
-        message: `Maj de la sauce avec l'id fourni`
-    });
-});
-
-app.delete('/api/sauces/:id', (req, res, next) => {
-    res.status(200).json({
-        message: `Sauce avec l'id fourni supprimée`
-    });
-});
+app.use('/api/sauces', saucesRoutes);
 
 module.exports = app;
