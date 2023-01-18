@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const dotenv = require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const saucesRoutes = require('./routes/sauces');
@@ -9,7 +10,7 @@ mongoose.set('strictQuery', true);
 
 // Création app express et connexion MongoDB
 const app = express();
-mongoose.connect('mongodb+srv://AlexP:1234@clusterp6.w6swi9g.mongodb.net/?retryWrites=true&w=majority',
+mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}.mongodb.net/?retryWrites=true&w=majority`,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
