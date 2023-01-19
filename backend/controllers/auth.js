@@ -1,9 +1,15 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const jwt = require('jsonwebtoken')
-
+const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv').config();
+const {validationResult} = require('express-validator');
 
 exports.signUp = (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+    
     bcrypt.hash(req.body.password, 10)
         .then(hash => {
             const user = new User({
@@ -32,7 +38,7 @@ exports.login = (req, res, next) => {
                         userId: user._id,
                         token: jwt.sign(
                             { userId: user._id },
-                            'RANDOM_TOKEN_SECRET',
+                            `${process.env.TOKEN_SECRET}`,
                             { expiresIn: '24h' }
                         )
                     });
