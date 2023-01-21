@@ -7,6 +7,6 @@ const { bodyRegisterValidator, bodyLoginValidator } = require('../middleware/val
 
 router.post('/signup', limiter, bodyRegisterValidator, authCtrl.signUp);
 
-router.post('/login', limiter, bodyLoginValidator, authCtrl.login);
+router.post('/login', bodyLoginValidator, authCtrl.login);
 
 module.exports = router;

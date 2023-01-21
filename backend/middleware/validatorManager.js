@@ -11,21 +11,15 @@ const validationResultExpress = (req, res, next) => {
 };
 
 const bodyLoginValidator = [
-    body("email", "Format de l'email incorrect")
-        .trim()
-        .isEmail()
-        .normalizeEmail(),
-    body("password", "Minimum 6 carractères").trim().isLength({ min: 6 }),
+    body("email", "Format de l'email incorrect").trim().isEmail().normalizeEmail(),
+    body("password", "Mot de passe incorrect").trim().isStrongPassword(),
     validationResultExpress,
 ];
 
 const bodyRegisterValidator = [
-    body("email", "Formato de email incorrecto")
-        .trim()
-        .isEmail()
-        .normalizeEmail(),
-    body("password", "Mínimo 6 carácteres").trim().isLength({ min: 6 }),
+    body("email", "Format de l'email incorrect").trim().isEmail().normalizeEmail(),
+    body("password", "Mot de passe incorrect").trim().isStrongPassword(),
     validationResultExpress,
 ];
 
-module.exports = {bodyLoginValidator, bodyRegisterValidator, validationResultExpress}
+module.exports = { bodyLoginValidator, bodyRegisterValidator, validationResultExpress };

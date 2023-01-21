@@ -23,6 +23,7 @@ exports.createSauce = (req, res, next) => {
     delete sauceObject.usersDisliked;
     // if ( sauceObject.heat > 10 ) {
     //     res.status(400).json({ message: 'valeur invalide'});
+    //     return
     // }
     const sauce = new Sauces({
         ...sauceObject,
@@ -49,6 +50,7 @@ exports.updateSauce = (req, res, next) => {
         .then((sauce) => {
             if (sauce.userId != req.auth.userId) {
                 res.status(401).json({ message: 'Not authorized' });
+                return
             } else {
                 Sauces.updateOne({ _id: req.params.id }, { ...sauceObject, _id: req.params.id })
                     .then(() => res.status(200).json({ message: 'Objet modifié!' }))
@@ -64,7 +66,8 @@ exports.deleteSauce = (req, res, next) => {
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
             if (sauce.userId != req.auth.userId) {
-                res.status(401).json({ message: 'not authorized' });
+                res.status(403).json({ message: 'Non authorisé' });
+                return
             }
             const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
@@ -74,6 +77,6 @@ exports.deleteSauce = (req, res, next) => {
             });
         })
         .catch(error => {
-            res.status(500).json({ error });
+            res.status(404).json({ message: 'Sauce introuvable' });
         })
 };
