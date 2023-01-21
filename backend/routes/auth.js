@@ -2,24 +2,11 @@ const express = require('express');
 const router = express.Router();
 const authCtrl = require('../controllers/auth');
 const limiter = require('../middleware/loginLimiter');
-const { body } = require('express-validator');
+const { bodyRegisterValidator, bodyLoginValidator } = require('../middleware/validatorManager');
 
 
-router.post('/signup',
-    limiter,
-    [
-        body('email', 'Email invalide')
-            .trim()
-            .isEmail()
-            .normalizeEmail(),
-        body('password', "Mot de passe incorrect")
-            .trim()
-            .isStrongPassword()
-    ],
-    authCtrl.signUp);
+router.post('/signup', limiter, bodyRegisterValidator, authCtrl.signUp);
 
-router.post('/login',
-    limiter,
-    authCtrl.login);
+router.post('/login', limiter, bodyLoginValidator, authCtrl.login);
 
 module.exports = router;

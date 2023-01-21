@@ -17,6 +17,13 @@ exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
     delete sauceObject._userId;
+    delete sauceObject.likes;
+    delete sauceObject.dislikes;
+    delete sauceObject.usersLiked;
+    delete sauceObject.usersDisliked;
+    // if ( sauceObject.heat > 10 ) {
+    //     res.status(400).json({ message: 'valeur invalide'});
+    // }
     const sauce = new Sauces({
         ...sauceObject,
         userId: req.auth.userId,
