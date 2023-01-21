@@ -21,10 +21,7 @@ exports.createSauce = (req, res, next) => {
     delete sauceObject.dislikes;
     delete sauceObject.usersLiked;
     delete sauceObject.usersDisliked;
-    // if ( sauceObject.heat > 10 ) {
-    //     res.status(400).json({ message: 'valeur invalide'});
-    //     return
-    // }
+  
     const sauce = new Sauces({
         ...sauceObject,
         userId: req.auth.userId,
@@ -72,9 +69,10 @@ exports.deleteSauce = (req, res, next) => {
             const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 Sauces.deleteOne({ _id: req.params.id })
-                    .then(() => { res.status(200).json({ message: 'Sauce supprimé !' }) })
+                    .then(() => { res.status(204) })
                     .catch(error => res.status(401).json({ error }));
             });
+            
         })
         .catch(error => {
             res.status(404).json({ message: 'Sauce introuvable' });
