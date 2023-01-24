@@ -93,8 +93,17 @@ exports.likeSauce = (req, res, next) => {
 
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
+
+            const userIdInLikes = sauce.usersLiked.find(element => element === req.body.userId);
+            const userIdInDislikes = sauce.usersDisliked.find(element => element === req.body.userId);
+
             if (req.body.like === 1) {
+                if (userIdInDislikes) {
+                    sauce.usersDisliked.splice(userIdInDislikes, 1);
+                    sauce.dislikes--;
+                }
                 sauce.usersLiked.push(req.body.userId);
+                sauce.likes++;
                 sauce.save()
                     .then(sauce => {
                         res.status(200).json({ message: 'Like ajouté !' });
@@ -103,11 +112,18 @@ exports.likeSauce = (req, res, next) => {
 
             }
 
-            const userIdInLikes = sauce.usersLiked.find(element => element === req.body.userId);
 
             if (req.body.like === 0) {
+                if (userIdInLikes) {
+                    sauce.usersLiked.splice(userIdInLikes, 1);
+                    sauce.likes--;
+                }
 
-                sauce.usersLiked.splice(userIdInLikes, 1);
+                if (userIdInDislikes) {
+                    sauce.usersDisliked.splice(userIdInDislikes, 1);
+                    sauce.dislikes--;
+                }
+
                 sauce.save()
                     .then(sauce => {
                         res.status(200).json({ message: 'Like annulé' })
@@ -119,9 +135,11 @@ exports.likeSauce = (req, res, next) => {
 
                 if (userIdInLikes) {
                     sauce.usersLiked.splice(userIdInLikes, 1);
+                    sauce.likes--;
                 }
 
                 sauce.usersDisliked.push(req.body.userId);
+                sauce.dislikes++;
                 sauce.save()
                     .then(sauce => {
                         res.status(200).json({ message: 'Dislike ajouté' });
