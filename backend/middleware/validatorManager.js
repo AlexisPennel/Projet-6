@@ -12,13 +12,13 @@ const validationResultExpress = (req, res, next) => {
 
 const bodyLoginValidator = [
     body("email", "Format de l'email incorrect").trim().isEmail().normalizeEmail(),
-    body("password", "Mot de passe incorrect").trim().isStrongPassword(),
+    body("password", "Format du mot de passe incorrect").trim().isStrongPassword(),
     validationResultExpress,
 ];
 
 const bodyRegisterValidator = [
     body("email", "Format de l'email incorrect").trim().isEmail().normalizeEmail(),
-    body("password", "Mot de passe incorrect").trim().isStrongPassword(),
+    body("password", "Format du mot de passe incorrect").trim().isStrongPassword(),
     validationResultExpress,
 ];
 
