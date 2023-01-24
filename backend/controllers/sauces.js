@@ -90,24 +90,44 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
-    console.log(req)
-    const sauceObject = req.body;
-
 
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
             if (req.body.like === 1) {
-                sauce.usersLiked += req.body.userId;
+                sauce.usersLiked.push(req.body.userId);
                 sauce.save()
                     .then(sauce => {
-                        res.status(200).json({message: 'Like ajouté !'});
+                        res.status(200).json({ message: 'Like ajouté !' });
                     })
-                    .catch(error => res.status(500).json({ message: 'erreur'}));
+                    .catch(error => res.status(500).json({ message: 'erreur' }));
+
             }
 
+            const userIdInLikes = sauce.usersLiked.find(element => element === req.body.userId);
+
             if (req.body.like === 0) {
-                
-                // res.status(200).json({ message: 'Like annulé' });
+
+                sauce.usersLiked.splice(userIdInLikes, 1);
+                sauce.save()
+                    .then(sauce => {
+                        res.status(200).json({ message: 'Like annulé' })
+                    })
+                    .catch(error => res.status((500).json({ error })))
+            }
+
+            if (req.body.like === -1) {
+
+                if (userIdInLikes) {
+                    sauce.usersLiked.splice(userIdInLikes, 1);
+                }
+
+                sauce.usersDisliked.push(req.body.userId);
+                sauce.save()
+                    .then(sauce => {
+                        res.status(200).json({ message: 'Dislike ajouté' });
+                    })
+                    .catch(error => res.status((500).json({ error })))
+
             }
         })
         .catch(error => res.status(500).json({ error }));
