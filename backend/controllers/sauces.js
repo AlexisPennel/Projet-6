@@ -79,7 +79,7 @@ exports.deleteSauce = (req, res, next) => {
             const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 Sauces.deleteOne({ _id: req.params.id })
-                    .then(() => { res.status(204) })
+                    .then(() => { res.status(200).json({ message: 'Sauce supprimée' }) })
                     .catch(error => res.status(401).json({ error }));
             });
 
@@ -87,4 +87,28 @@ exports.deleteSauce = (req, res, next) => {
         .catch(error => {
             res.status(404).json({ message: 'Sauce introuvable' });
         })
+};
+
+exports.likeSauce = (req, res, next) => {
+    console.log(req)
+    const sauceObject = req.body;
+
+
+    Sauces.findOne({ _id: req.params.id })
+        .then(sauce => {
+            if (req.body.like === 1) {
+                sauce.usersLiked += req.body.userId;
+                sauce.save()
+                    .then(sauce => {
+                        res.status(200).json({message: 'Like ajouté !'});
+                    })
+                    .catch(error => res.status(500).json({ message: 'erreur'}));
+            }
+
+            if (req.body.like === 0) {
+                
+                // res.status(200).json({ message: 'Like annulé' });
+            }
+        })
+        .catch(error => res.status(500).json({ error }));
 };
