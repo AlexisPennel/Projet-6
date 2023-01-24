@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv').config();
+const helmet = require('helmet');
 
 const authRoutes = require('./routes/auth');
 const saucesRoutes = require('./routes/sauces');
@@ -17,6 +18,9 @@ mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGOD
     })
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
+
+// Package helmet
+app.use(helmet());
 
 // Prise en charge JSON
 app.use(express.json());
