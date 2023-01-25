@@ -159,6 +159,7 @@ exports.likeSauce = (req, res, next) => {
                     .catch(error => res.status(500).json({ error }));
 
             }
+            
             if (req.body.like < -1 || req.body.like > 1) {
                 res.status(400).json({ message: "requête erronée " });
             }

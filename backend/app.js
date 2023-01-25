@@ -11,7 +11,7 @@ mongoose.set('strictQuery', true);
 
 // Création app express et connexion MongoDB
 const app = express();
-mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}.mongodb.net/?retryWrites=true&w=majority`,
+mongoose.connect(`${process.env.MONGODB_URI}`,
     {
         useNewUrlParser: true,
         useUnifiedTopology: true
