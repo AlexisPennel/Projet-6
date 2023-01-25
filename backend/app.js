@@ -22,6 +22,9 @@ mongoose.connect(`mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGOD
 // Package helmet
 app.use(helmet());
 
+// Sécurité header - retrait x-powered-by
+app.disable('x-powered-by');
+
 // Prise en charge JSON
 app.use(express.json());
 
