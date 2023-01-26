@@ -20,7 +20,7 @@ mongoose.connect(`${process.env.MONGODB_URI}`,
     .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 // Package helmet
-app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
 // Sécurité header - retrait x-powered-by
 app.disable('x-powered-by');
