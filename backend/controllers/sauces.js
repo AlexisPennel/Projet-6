@@ -46,7 +46,7 @@ exports.updateSauce = (req, res, next) => {
     Sauces.findOne({ _id: req.params.id })
         .then((sauce) => {
             if (sauce.userId != req.auth.userId) {
-                res.status(403).json({ message: 'Non authorisé' });
+                res.status(401).json({ message: 'Non authorisé' });
                 return
             }
 
@@ -64,7 +64,7 @@ exports.updateSauce = (req, res, next) => {
 
         })
         .catch((error) => {
-            res.status(400).json({ error });
+            res.status(404).json({ message: `La sauce n'existe pas`});
         });
 };
 
@@ -72,13 +72,13 @@ exports.deleteSauce = (req, res, next) => {
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
             if (sauce.userId != req.auth.userId) {
-                res.status(403).json({ message: 'Non authorisé' });
+                res.status(401).json({ message: 'Non authorisé' });
                 return
             }
             const filename = sauce.imageUrl.split('/images/')[1];
             fs.unlink(`images/${filename}`, () => {
                 Sauces.deleteOne({ _id: req.params.id })
-                    .then(() => { res.status(200).json({ message: 'Sauce supprimée' }) })
+                    .then(() => { res.status(204).json() })
                     .catch(error => res.status(401).json({ error }));
             });
 

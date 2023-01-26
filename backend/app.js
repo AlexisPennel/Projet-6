@@ -43,4 +43,8 @@ app.use('/api/sauces', saucesRoutes);
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+app.use('/api/*', (req, res) => {
+    res.status(404).json({ message: `La page n'existe pas`})
+} )
+
 module.exports = app;
