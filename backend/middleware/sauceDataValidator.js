@@ -5,6 +5,7 @@ const dataCheck = (req, res) => {
     const errorsArray = [];
     let isValid = true;
 
+
     if (sauceObject.name.trim() === "") {
         errorsArray.push(" Name invalide");
         isValid = false
@@ -42,9 +43,18 @@ const dataCheck = (req, res) => {
 };
 
 const sauceDataValidatorPost = (req, res, next) => {
-    
+    try {
+        JSON.parse(req.body.sauce);
+    } catch (error) {
+        fs.unlink(`images/${req.file.filename}`, (err) => {
+            if (err) throw err;
+            console.log(`images/${req.file.filename} deleted`)
+        });
+        return res.status(400).json({ message: "requête erronée" });
+    }
+
     if (!req.body.sauce || !req.file) {
-        return res.status(400).json({ message: "requête erronée"})
+        return res.status(400).json({ message: "requête erronée" })
     }
 
     const dataErrorArray = dataCheck(req, res);
@@ -57,8 +67,20 @@ const sauceDataValidatorPost = (req, res, next) => {
 };
 
 const sauceDataValidatorPut = (req, res, next) => {
+    try {
+        JSON.parse(req.body.sauce);
+    } catch (error) {
+        if (req.file) {
+            fs.unlink(`images/${req.file.filename}`, (err) => {
+                if (err) throw err;
+                console.log(`images/${req.file.filename} deleted`)
+            });
+        }
+        return res.status(400).json({ message: "requête erronée" });
+    }
+
     if (!req.body) {
-        return res.status(400).json({ message: "requête erronée"})
+        return res.status(400).json({ message: "requête erronée" })
     }
 
     const dataErrorArray = dataCheck(req, res);
@@ -66,7 +88,7 @@ const sauceDataValidatorPut = (req, res, next) => {
         return next()
     }
 
-    res.status(400).json({ message: `${dataErrorArray}`});
+    res.status(400).json({ message: `${dataErrorArray}` });
 }
 
-module.exports =  { sauceDataValidatorPost, sauceDataValidatorPut} ; 
+module.exports = { sauceDataValidatorPost, sauceDataValidatorPut }; 
