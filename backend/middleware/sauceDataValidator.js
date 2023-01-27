@@ -43,6 +43,11 @@ const dataCheck = (req, res) => {
 };
 
 const sauceDataValidatorPost = (req, res, next) => {
+   
+    if (!req.body.sauce || !req.file) {
+        return res.status(400).json({ message: "requête erronée" })
+    }
+
     try {
         JSON.parse(req.body.sauce);
     } catch (error) {
@@ -53,9 +58,6 @@ const sauceDataValidatorPost = (req, res, next) => {
         return res.status(400).json({ message: "requête erronée" });
     }
 
-    if (!req.body.sauce || !req.file) {
-        return res.status(400).json({ message: "requête erronée" })
-    }
 
     const dataErrorArray = dataCheck(req, res);
     if (dataErrorArray.length === 0) {
@@ -67,6 +69,10 @@ const sauceDataValidatorPost = (req, res, next) => {
 };
 
 const sauceDataValidatorPut = (req, res, next) => {
+    if (!req.body) {
+        return res.status(400).json({ message: "requête erronée" })
+    }
+
     try {
         JSON.parse(req.body.sauce);
     } catch (error) {
@@ -77,10 +83,6 @@ const sauceDataValidatorPut = (req, res, next) => {
             });
         }
         return res.status(400).json({ message: "requête erronée" });
-    }
-
-    if (!req.body) {
-        return res.status(400).json({ message: "requête erronée" })
     }
 
     const dataErrorArray = dataCheck(req, res);
