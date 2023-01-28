@@ -89,6 +89,10 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
+   
+    if (!req.body.like) {
+        return res.status(400).json({ message: "requête erronée"})
+    }
 
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {

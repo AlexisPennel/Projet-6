@@ -45,6 +45,12 @@ const dataCheck = (req, res) => {
 const sauceDataValidatorPost = (req, res, next) => {
    
     if (!req.body.sauce || !req.file) {
+        if(req.file) {
+            fs.unlink(`images/${req.file.filename}`, (err) => {
+                if (err) throw err;
+                console.log(`images/${req.file.filename} deleted`)
+            });
+        }
         return res.status(400).json({ message: "requête erronée" })
     }
 
@@ -58,7 +64,6 @@ const sauceDataValidatorPost = (req, res, next) => {
         return res.status(400).json({ message: "requête erronée" });
     }
 
-
     const dataErrorArray = dataCheck(req, res);
     if (dataErrorArray.length === 0) {
         return next()
@@ -70,6 +75,12 @@ const sauceDataValidatorPost = (req, res, next) => {
 
 const sauceDataValidatorPut = (req, res, next) => {
     if (!req.body) {
+        if(req.file) {
+            fs.unlink(`images/${req.file.filename}`, (err) => {
+                if (err) throw err;
+                console.log(`images/${req.file.filename} deleted`)
+            });
+        }
         return res.status(400).json({ message: "requête erronée" })
     }
 
