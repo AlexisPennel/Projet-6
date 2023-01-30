@@ -21,7 +21,7 @@ exports.createSauce = (req, res, next) => {
     delete sauceObject.dislikes;
     delete sauceObject.usersLiked;
     delete sauceObject.usersDisliked;
-    
+
     const sauce = new Sauces({
         ...sauceObject,
         name: sauceObject.name.trim(),
@@ -51,7 +51,7 @@ exports.updateSauce = (req, res, next) => {
     sauceObject.manufacturer = sauceObject.name.trim();
     sauceObject.description = sauceObject.description.trim();
     sauceObject.mainPepper = sauceObject.mainPepper.trim();
-    
+
     Sauces.findOne({ _id: req.params.id })
         .then((sauce) => {
             if (sauce.userId != req.auth.userId) {
@@ -72,7 +72,7 @@ exports.updateSauce = (req, res, next) => {
 
         })
         .catch((error) => {
-            res.status(404).json({ message: `La sauce n'existe pas`});
+            res.status(404).json({ message: `La sauce n'existe pas` });
         });
 };
 
@@ -97,16 +97,16 @@ exports.deleteSauce = (req, res, next) => {
 };
 
 exports.likeSauce = (req, res, next) => {
-   
-    if (!req.body.like) {
-        return res.status(400).json({ message: "requête erronée"})
-    }
 
+    if (!req.body) {
+        return res.status(400).json({ message: "requête erronée" })
+    }
+    delete req.body.userId;
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
 
-            const userIdInLikes = sauce.usersLiked.find(element => element === req.body.userId);
-            const userIdInDislikes = sauce.usersDisliked.find(element => element === req.body.userId);
+            const userIdInLikes = sauce.usersLiked.find(element => element === req.auth.userId);
+            const userIdInDislikes = sauce.usersDisliked.find(element => element === req.auth.userId);
 
             if (req.body.like === 1) {
                 if (userIdInDislikes) {
@@ -115,18 +115,25 @@ exports.likeSauce = (req, res, next) => {
                 }
 
                 if (userIdInLikes) {
-                    res.status(400).json({ message: "Sauce déjà likée" });
-                    return
+                    return res.status(400).json({ message: "Sauce déjà likée" });
+
                 }
-                sauce.usersLiked.push(req.body.userId);
-                sauce.likes++;
+
+                if (!userIdInDislikes && !userIdInLikes) {
+                    sauce.usersLiked.push(req.auth.userId);
+                    sauce.likes++;
+                }
+
                 sauce.save()
                     .then(sauce => {
-                        res.status(200).json({ message: 'Like ajouté !' });
-                        return
+                        if (userIdInDislikes) {
+                            return res.status(200).json({ message: "Dislike annulé"});
+                        }
+
+                        return res.status(200).json({ message: 'Like ajouté !' });
+                        
                     })
                     .catch(error => res.status(500).json({ message: 'erreur' }));
-
             }
 
 
@@ -143,8 +150,14 @@ exports.likeSauce = (req, res, next) => {
 
                 sauce.save()
                     .then(sauce => {
-                        res.status(200).json({ message: 'Like annulé' });
-                        return
+                        if (userIdInLikes) {
+                            return res.status(200).json({ message: 'Like annulé' });
+                        }
+                        if (userIdInDislikes) {
+                            return res.status(200).json({ message: 'Dislike annulé' });
+                        }
+                        return res.status(400).json({ message: "requête erronée" })
+
                     })
                     .catch(error => res.status((500).json({ error })));
             }
@@ -157,21 +170,25 @@ exports.likeSauce = (req, res, next) => {
                 }
 
                 if (userIdInDislikes) {
-                    res.status(400).json({ message: "Sauce déjà dislikée" });
-                    return
+                    return res.status(400).json({ message: "Sauce déjà dislikée" });
                 }
 
-                sauce.usersDisliked.push(req.body.userId);
-                sauce.dislikes++;
+                if (!userIdInLikes && !userIdInDislikes) {
+                    sauce.usersDisliked.push(req.auth.userId);
+                    sauce.dislikes++;
+                }
+
                 sauce.save()
                     .then(sauce => {
+                        if (userIdInLikes) {
+                            return res.status(200).json({ message: "Like annulé" })
+                        }
                         res.status(200).json({ message: 'Dislike ajouté' });
                         return
                     })
                     .catch(error => res.status(500).json({ error }));
-
             }
-            
+
             if (req.body.like < -1 || req.body.like > 1) {
                 res.status(400).json({ message: "requête erronée " });
             }
