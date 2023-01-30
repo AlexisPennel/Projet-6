@@ -21,9 +21,13 @@ exports.createSauce = (req, res, next) => {
     delete sauceObject.dislikes;
     delete sauceObject.usersLiked;
     delete sauceObject.usersDisliked;
-
+    
     const sauce = new Sauces({
         ...sauceObject,
+        name: sauceObject.name.trim(),
+        manufacturer: sauceObject.manufacturer.trim(),
+        description: sauceObject.description.trim(),
+        mainPepper: sauceObject.mainPepper.trim(),
         userId: req.auth.userId,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
         likes: 0,
@@ -43,6 +47,11 @@ exports.updateSauce = (req, res, next) => {
     } : { ...req.body };
 
     delete sauceObject._userId;
+    sauceObject.name = sauceObject.name.trim();
+    sauceObject.manufacturer = sauceObject.name.trim();
+    sauceObject.description = sauceObject.description.trim();
+    sauceObject.mainPepper = sauceObject.mainPepper.trim();
+    
     Sauces.findOne({ _id: req.params.id })
         .then((sauce) => {
             if (sauce.userId != req.auth.userId) {
@@ -52,7 +61,6 @@ exports.updateSauce = (req, res, next) => {
 
             if (req.file) {
                 const filename = sauce.imageUrl.split('/images/')[1];
-                console.log(filename);
                 fs.unlink(`images/${filename}`, (err) => {
                     if (err) throw err;
                 });

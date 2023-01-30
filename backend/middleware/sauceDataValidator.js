@@ -1,7 +1,12 @@
 const fs = require('fs');
 
 const dataCheck = (req, res) => {
-    const sauceObject = JSON.parse(req.body.sauce);
+    let sauceObject = req.body;
+
+    if (req.file) {
+        sauceObject = JSON.parse(req.body.sauce);
+    }
+
     const errorsArray = [];
     let isValid = true;
 
@@ -43,9 +48,9 @@ const dataCheck = (req, res) => {
 };
 
 const sauceDataValidatorPost = (req, res, next) => {
-   
+
     if (!req.body.sauce || !req.file) {
-        if(req.file) {
+        if (req.file) {
             fs.unlink(`images/${req.file.filename}`, (err) => {
                 if (err) throw err;
                 console.log(`images/${req.file.filename} deleted`)
@@ -75,27 +80,15 @@ const sauceDataValidatorPost = (req, res, next) => {
 
 const sauceDataValidatorPut = (req, res, next) => {
     if (!req.body) {
-        if(req.file) {
-            fs.unlink(`images/${req.file.filename}`, (err) => {
-                if (err) throw err;
-                console.log(`images/${req.file.filename} deleted`)
-            });
-        }
-        return res.status(400).json({ message: "requête erronée" })
-    }
-
-    try {
-        JSON.parse(req.body.sauce);
-    } catch (error) {
         if (req.file) {
             fs.unlink(`images/${req.file.filename}`, (err) => {
                 if (err) throw err;
                 console.log(`images/${req.file.filename} deleted`)
             });
         }
-        return res.status(400).json({ message: "requête erronée" });
+        return res.status(400).json({ message: "requête erronée1" })
     }
-
+   
     const dataErrorArray = dataCheck(req, res);
     if (dataErrorArray.length === 0) {
         return next()
