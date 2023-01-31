@@ -101,72 +101,66 @@ exports.likeSauce = (req, res, next) => {
     if (!req.body) {
         return res.status(400).json({ message: "requête erronée" })
     }
+
     delete req.body.userId;
     Sauces.findOne({ _id: req.params.id })
         .then(sauce => {
 
             const userIdInLikes = sauce.usersLiked.find(element => element === req.auth.userId);
             const userIdInDislikes = sauce.usersDisliked.find(element => element === req.auth.userId);
+            let newLikes = sauce.likes;
+            let newDislikes = sauce.dislikes;
 
             if (req.body.like === 1) {
                 if (userIdInDislikes) {
-                    sauce.usersDisliked.splice(userIdInDislikes, 1);
-                    sauce.dislikes--;
+                    newDislikes--;
+                    Sauces.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: `${userIdInDislikes}` }, dislikes: newDislikes })
+                        .then(() => res.status(200).json({ message: 'Dislike annulé!' }))
+                        .catch(error => res.status(401).json({ error }));
                 }
 
                 if (userIdInLikes) {
                     return res.status(400).json({ message: "Sauce déjà likée" });
-
                 }
 
                 if (!userIdInDislikes && !userIdInLikes) {
-                    sauce.usersLiked.push(req.auth.userId);
-                    sauce.likes++;
+                    newLikes++;
+                    Sauces.updateOne({ _id: req.params.id }, { $push: { usersLiked: `${req.auth.userId}` }, likes: newLikes })
+                        .then(() => res.status(200).json({ message: 'like ajouté !' }))
+                        .catch(error => res.status(401).json({ error }));
                 }
-
-                sauce.save()
-                    .then(sauce => {
-                        if (userIdInDislikes) {
-                            return res.status(200).json({ message: "Dislike annulé"});
-                        }
-
-                        return res.status(200).json({ message: 'Like ajouté !' });
-                        
-                    })
-                    .catch(error => res.status(500).json({ message: 'erreur' }));
             }
 
 
             if (req.body.like === 0) {
                 if (userIdInLikes) {
-                    sauce.usersLiked.splice(userIdInLikes, 1);
-                    sauce.likes--;
+                    newLikes--;
+                    Sauces.updateOne({ _id: req.params.id }, { $pull: { usersLiked: `${userIdInLikes}` }, likes: newLikes })
+                        .then(() => res.status(200).json({ message: 'Like annulé!' }))
+                        .catch(error => res.status(401).json({ error }));
                 }
 
                 if (userIdInDislikes) {
-                    sauce.usersDisliked.splice(userIdInDislikes, 1);
-                    sauce.dislikes--;
+                    newDislikes--;
+                    console.log(newDislikes)
+                    Sauces.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: `${userIdInDislikes}` }, dislikes: newDislikes })
+                        .then(() => res.status(200).json({ message: 'Dislike annulé!' }))
+                        .catch(error => res.status(401).json({ error }));
                 }
 
-                sauce.save()
-                    .then(sauce => {
-                        if (userIdInLikes) {
-                            return res.status(200).json({ message: 'Like annulé' });
-                        }
-                        if (userIdInDislikes) {
-                            return res.status(200).json({ message: 'Dislike annulé' });
-                        }
-                        return res.status(400).json({ message: "requête erronée" })
+                if (!userIdInLikes && !userIdInDislikes) {
+                    return res.status(400).json({ message: "requête erronée" })
+                }
 
-                    })
-                    .catch(error => res.status((500).json({ error })));
             }
 
             if (req.body.like === -1) {
 
                 if (userIdInLikes) {
-                    sauce.usersLiked.splice(userIdInLikes, 1);
-                    sauce.likes--;
+                    newLikes--;
+                    Sauces.updateOne({ _id: req.params.id }, { $pull: { usersLiked: `${userIdInLikes}` }, likes: newLikes })
+                        .then(() => res.status(200).json({ message: 'Like annulé!' }))
+                        .catch(error => res.status(401).json({ error }));
                 }
 
                 if (userIdInDislikes) {
@@ -174,19 +168,11 @@ exports.likeSauce = (req, res, next) => {
                 }
 
                 if (!userIdInLikes && !userIdInDislikes) {
-                    sauce.usersDisliked.push(req.auth.userId);
-                    sauce.dislikes++;
+                    newDislikes++;
+                    Sauces.updateOne({ _id: req.params.id }, { $push: { usersDisliked: `${req.auth.userId}` }, dislikes: newDislikes })
+                        .then(() => res.status(200).json({ message: 'Dislike ajouté !' }))
+                        .catch(error => res.status(401).json({ error }));
                 }
-
-                sauce.save()
-                    .then(sauce => {
-                        if (userIdInLikes) {
-                            return res.status(200).json({ message: "Like annulé" })
-                        }
-                        res.status(200).json({ message: 'Dislike ajouté' });
-                        return
-                    })
-                    .catch(error => res.status(500).json({ error }));
             }
 
             if (req.body.like < -1 || req.body.like > 1) {
