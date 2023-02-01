@@ -32,7 +32,7 @@ const dataCheck = (req, res) => {
     };
 
     if (sauceObject.heat > 10 || sauceObject.heat < 1) {
-        errorsArray.push(" Heat invalide");
+        errorsArray.push(" Heat invalide, doit être compris entre 1 et 10.");
         isValid = false
     };
 
@@ -86,9 +86,9 @@ const sauceDataValidatorPut = (req, res, next) => {
                 console.log(`images/${req.file.filename} deleted`)
             });
         }
-        return res.status(400).json({ message: "requête erronée1" })
+        return res.status(400).json({ message: "requête erronée" })
     }
-   
+
     const dataErrorArray = dataCheck(req, res);
     if (dataErrorArray.length === 0) {
         return next()
