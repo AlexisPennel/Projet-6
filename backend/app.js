@@ -22,9 +22,6 @@ mongoose.connect(`${process.env.MONGODB_URI}`,
 // Package helmet
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
-// Sécurité header - retrait x-powered-by
-app.disable('x-powered-by');
-
 // Prise en charge JSON
 app.use(express.json());
 

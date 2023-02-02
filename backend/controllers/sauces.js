@@ -98,9 +98,10 @@ exports.deleteSauce = (req, res, next) => {
 
 exports.likeSauce = (req, res, next) => {
 
-    if (!req.body) {
-        return res.status(400).json({ message: "requête erronée" })
+    if (!req._body || isNaN(req.body.like) || req.body.like === "") {
+     return res.status(400).json({ message: "requête erronée" });
     }
+
 
     delete req.body.userId;
     Sauces.findOne({ _id: req.params.id })
@@ -113,10 +114,7 @@ exports.likeSauce = (req, res, next) => {
 
             if (req.body.like === 1) {
                 if (userIdInDislikes) {
-                    newDislikes--;
-                    Sauces.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: `${userIdInDislikes}` }, dislikes: newDislikes })
-                        .then(() => res.status(200).json({ message: 'Dislike annulé!' }))
-                        .catch(error => res.status(401).json({ error }));
+                   return res.status(400).json({ message: "Impossible de liker une sauce déjà dislikée"});
                 }
 
                 if (userIdInLikes) {
@@ -142,7 +140,6 @@ exports.likeSauce = (req, res, next) => {
 
                 if (userIdInDislikes) {
                     newDislikes--;
-                    console.log(newDislikes)
                     Sauces.updateOne({ _id: req.params.id }, { $pull: { usersDisliked: `${userIdInDislikes}` }, dislikes: newDislikes })
                         .then(() => res.status(200).json({ message: 'Dislike annulé!' }))
                         .catch(error => res.status(401).json({ error }));
@@ -157,10 +154,7 @@ exports.likeSauce = (req, res, next) => {
             if (req.body.like === -1) {
 
                 if (userIdInLikes) {
-                    newLikes--;
-                    Sauces.updateOne({ _id: req.params.id }, { $pull: { usersLiked: `${userIdInLikes}` }, likes: newLikes })
-                        .then(() => res.status(200).json({ message: 'Like annulé!' }))
-                        .catch(error => res.status(401).json({ error }));
+                    return res.status(400).json({ message: "Impossible de disliker une sauce déjà likée"});
                 }
 
                 if (userIdInDislikes) {
