@@ -38,10 +38,13 @@ app.use('/api/auth', authRoutes);
 
 app.use('/api/sauces', saucesRoutes);
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
-
+// Message d'erreur en cas d'endpoint inexistant 
 app.use('/api/*', (req, res) => {
     res.status(404).json({ message: `La page n'existe pas`})
-} )
+} );
+
+// Route gestion des images 
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 
 module.exports = app;

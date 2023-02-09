@@ -12,7 +12,7 @@ const validationResultExpress = (req, res, next) => {
 
 const bodyLoginValidator = [
     body("email", "Format de l'email incorrect").trim().isEmail().normalizeEmail(),
-    body("password", "Le mot de passe est incorrect et doit avoir au moins 8 caractères, contenir au moins une majuscule , un chiffre et un caractère spécial").trim().isStrongPassword(),
+    body("password", "Le mot de passe doit avoir au moins 8 caractères, contenir au moins une majuscule , un chiffre et un caractère spécial").trim().isStrongPassword(),
     validationResultExpress,
 ];
 

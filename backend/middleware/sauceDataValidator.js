@@ -32,7 +32,7 @@ const dataCheck = (req, res) => {
     };
 
     if (sauceObject.heat > 10 || sauceObject.heat < 1) {
-        errorsArray.push(" Heat invalide, doit être compris entre 1 et 10.");
+        errorsArray.push(" Heat invalide (doit être compris entre 1 et 10)");
         isValid = false
     };
 
@@ -74,7 +74,7 @@ const sauceDataValidatorPost = (req, res, next) => {
         return next()
     }
 
-    res.status(500).json({ message: `${dataErrorArray}` });
+    res.status(400).json({ message: `${dataErrorArray}` });
 
 };
 
