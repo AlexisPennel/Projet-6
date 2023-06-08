@@ -1,0 +1,5 @@
+{
+    "buildCommand": "npm install && npm install -g @angular/cli && ng build --prod",
+    "devCommand": "ng serve",
+    "publish": "dist"
+  }
